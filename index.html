@@ -1,0 +1,347 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<link rel="stylesheet" href="./resources/ol.css">
+<link rel="stylesheet" href="resources/fontawesome-all.min.css">
+<link href="resources/photon-geocoder-autocomplete.min.css" rel="stylesheet">
+<link rel="stylesheet" href="./resources/ol-layerswitcher.css">
+<link rel="stylesheet" href="./resources/qgis2web.css">
+<title>SC • Painel de Gestão • Execução de Convênios</title>
+<style>
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;padding:0;overflow:hidden;font-family:Inter,"Segoe UI",Arial,sans-serif;background:#eef1f5;color:#0f172a}
+#map{position:absolute;margin:0;background:#eef1f5}
+.ol-control{box-shadow:0 2px 8px rgba(15,23,42,.18)!important;border-radius:8px!important;background:rgba(255,255,255,.45)!important;padding:2px!important}
+.ol-control>*{border-radius:6px!important;background:#f8fafc!important;color:#475569!important}
+.ol-control>*:focus,.ol-control>*:hover{background:#fff!important}
+.ol-attribution a,.gcd-gl-input::placeholder,.search-layer-input-search::placeholder{color:#475569!important}
+.search-layer-input-search{background:#f8fafc!important}
+
+.ol-popup{
+  border:1px solid rgba(15,23,42,.10);
+  border-radius:14px!important;
+  padding:14px 16px!important;
+  box-shadow:0 14px 40px rgba(15,23,42,.22)!important;
+  min-width:350px;
+  max-width:540px;
+  background:rgba(255,255,255,.98)!important;
+}
+.ol-popup:after{border-top-color:#fff!important}
+.ol-popup-closer{top:8px!important;right:8px!important;color:#64748b!important}
+#popup-content{font-size:12px!important;line-height:1.35!important;max-height:68vh!important;max-width:510px!important;overflow-y:auto!important;padding-right:2px}
+#popup-content ul{margin:0!important;padding:0!important;list-style:none!important}
+#popup-content li{margin:0!important;padding:0!important}
+#popup-content table{width:100%;border-collapse:collapse;font-size:12px!important}
+#popup-content table>a{display:block;font-size:14px;color:#0f172a;margin:0 30px 8px 0;text-decoration:none}
+#popup-content th,#popup-content td{padding:6px 7px!important;border-bottom:1px solid #edf0f4;min-width:0!important;vertical-align:top}
+#popup-content th{font-weight:750;color:#334155;width:38%;text-align:left}
+#popup-content td{color:#0f172a}
+.popup-municipio{font-weight:800;font-size:14px}
+.popup-section td{padding:10px 0 0!important;border-bottom:none!important}
+.situacoes-title{font-weight:800;color:#0f172a;margin:0 0 6px 0}
+.situacoes-wrap{border:1px solid #e5eaf0;border-radius:10px;overflow:hidden;background:#f8fafc}
+.situacao-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:start;padding:7px 9px;border-bottom:1px solid #e7ecf2}
+.situacao-row:last-child{border-bottom:none}
+.situacao-nome{color:#334155;line-height:1.28;overflow-wrap:anywhere}
+.situacao-qtd{min-width:30px;text-align:center;font-weight:800;color:#0f172a;background:#fff;border:1px solid #dfe5ec;border-radius:999px;padding:2px 7px;line-height:1.25}
+.situacoes-empty{padding:8px 9px;color:#64748b}
+
+.brand-kicker{font-size:11px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:#64748b}
+.title{font-weight:800;color:#0f172a;line-height:1.05}
+.subtitle{font-size:12px;color:#64748b;line-height:1.38}
+.kpi{background:#fff;border:1px solid #e5e7eb;border-radius:12px;padding:10px 12px;box-shadow:0 6px 20px rgba(15,23,42,.05)}
+.kpi .value{font-size:20px;font-weight:850;letter-spacing:-.02em;color:#0f172a}
+.kpi .label{font-size:10px;text-transform:uppercase;letter-spacing:.07em;color:#64748b;margin-top:2px;font-weight:700}
+.legend-box{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:11px 12px;color:#334155;font-size:11px}
+.legend-title{font-weight:800;color:#0f172a;margin-bottom:7px}
+.legend-row{display:flex;align-items:center;gap:7px;margin:4px 0}
+.swatch{width:18px;height:11px;border:1px solid #555;border-radius:2px;flex:0 0 auto}
+
+body.p2{background:#f8fafc}
+.p2 .sidebar{
+  position:absolute;z-index:20;left:0;top:0;bottom:0;width:330px;
+  background:#fff;border-right:1px solid #dfe5ec;
+  padding:20px 17px 14px;overflow:auto;
+  box-shadow:5px 0 20px rgba(15,23,42,.08);
+  transition:width .24s ease,padding .24s ease
+}
+.p2 .sidebar-inner{min-width:296px;transition:opacity .16s ease}
+.p2 .sidebar .title{font-size:24px;margin:4px 0 5px}
+.p2 .section-title{font-size:11px;color:#64748b;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin:18px 0 8px}
+.p2 .kpi-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.p2 .kpi{padding:10px}
+.p2 .kpi .value{font-size:18px}
+.p2 .rank{list-style:none;margin:0;padding:0}
+.p2 .rank li{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 3px;border-bottom:1px solid #edf0f4;font-size:12px;color:#334155}
+.p2 .rank b{color:#0f172a}
+.p2 .rank .badge{font-size:11px;font-weight:800;background:#fee2e2;color:#991b1b;border-radius:999px;padding:3px 7px;flex:0 0 auto}
+.p2 #map{left:330px;right:0;top:0;bottom:0;transition:left .24s ease}
+.p2 .footer-note{font-size:10px;line-height:1.45;color:#94a3b8;margin-top:14px}
+.p2 .sidebar-toggle{
+  position:fixed;z-index:40;left:304px;top:14px;width:30px;height:30px;
+  border:1px solid #dbe3ec;border-radius:999px;background:#fff;color:#475569;
+  box-shadow:0 4px 14px rgba(15,23,42,.18);cursor:pointer;
+  font-size:21px;font-weight:800;line-height:26px;padding:0;text-align:center;
+  transition:left .24s ease,transform .15s ease
+}
+.p2 .sidebar-toggle:hover{transform:scale(1.05)}
+.p2 .sidebar-toggle:focus{outline:2px solid rgba(37,99,235,.30);outline-offset:2px}
+.p2.sidebar-collapsed .sidebar{width:38px;padding:0;overflow:hidden}
+.p2.sidebar-collapsed .sidebar-inner{opacity:0;pointer-events:none}
+.p2.sidebar-collapsed #map{left:38px}
+.p2.sidebar-collapsed .sidebar-toggle{left:23px}
+
+@media(max-width:850px){
+  .ol-popup{min-width:290px;max-width:88vw!important}
+  .p2 .sidebar{width:250px;padding:13px 11px}
+  .p2 .sidebar-inner{min-width:226px}
+  .p2 .sidebar .title{font-size:18px}
+  .p2 #map{left:250px}
+  .p2 .sidebar-toggle{left:224px}
+  .p2 .kpi-grid{grid-template-columns:1fr}
+  .p2 .rank li:nth-child(n+4){display:none}
+  .p2.sidebar-collapsed .sidebar{width:38px;padding:0}
+  .p2.sidebar-collapsed #map{left:38px}
+  .p2.sidebar-collapsed .sidebar-toggle{left:23px}
+}
+@media(max-width:600px){
+  .p2 .sidebar{width:228px}
+  .p2 .sidebar-inner{min-width:204px}
+  .p2 #map{left:228px}
+  .p2 .sidebar-toggle{left:202px}
+  .p2.sidebar-collapsed .sidebar{width:38px}
+  .p2.sidebar-collapsed #map{left:38px}
+  .p2.sidebar-collapsed .sidebar-toggle{left:23px}
+}
+</style>
+</head>
+<body class="p2">
+<aside class="sidebar">
+  <div class="sidebar-inner">
+    <div class="brand-kicker">Painel de gestão • <span id="uf-label">SC</span></div>
+    <div class="title">Execução de Convênios</div>
+    <div class="subtitle">Leitura gerencial dos municípios catarinenses • <span id="periodo-label">2021–2026</span></div>
+
+    <div class="section-title">Resumo estadual</div>
+    <div class="kpi-grid">
+      <div class="kpi"><div class="value" id="kpi-exec">—</div><div class="label">em execução</div></div>
+      <div class="kpi"><div class="value" id="kpi-mun">—</div><div class="label">municípios</div></div>
+      <div class="kpi"><div class="value" id="kpi-desemb">—</div><div class="label">desembolsado</div></div>
+      <div class="kpi"><div class="value" id="kpi-saldo">—</div><div class="label">saldo</div></div>
+    </div>
+
+    <div class="section-title">Maior quantidade em execução</div>
+    <ol class="rank" id="ranking"></ol>
+
+    <div class="section-title">Legenda</div>
+    <div class="legend-box">
+      <div class="legend-title">Convênios em execução</div>
+      <div class="legend-row"><span class="swatch" style="background:#fff"></span>0–1</div>
+      <div class="legend-row"><span class="swatch" style="background:#ffcccc"></span>1–2</div>
+      <div class="legend-row"><span class="swatch" style="background:#ff9999"></span>2–4</div>
+      <div class="legend-row"><span class="swatch" style="background:#ff6666"></span>4–6</div>
+      <div class="legend-row"><span class="swatch" style="background:#ff3333"></span>6–10</div>
+      <div class="legend-row"><span class="swatch" style="background:#ff0000"></span>10–30</div>
+    </div>
+
+    <div class="footer-note">Base pública Transferegov. Clique no município para consultar valores e o resumo das situações.</div>
+  </div>
+</aside>
+
+<button id="sidebar-toggle" class="sidebar-toggle" type="button" aria-label="Recolher painel" aria-expanded="true">‹</button>
+
+<div id="map">
+  <div id="popup" class="ol-popup">
+    <a href="#" id="popup-closer" class="ol-popup-closer"></a>
+    <div id="popup-content"></div>
+  </div>
+</div>
+
+<script src="resources/qgis2web_expressions.js"></script>
+<script src="./resources/functions.js"></script>
+<script src="./resources/ol.js"></script>
+<script src="./resources/ol-layerswitcher.js"></script>
+<script src="resources/photon-geocoder-autocomplete.min.js"></script>
+<script src="resources/olms.js"></script>
+<script src="layers/SC_Municipios_202608_0.js"></script>
+<script src="styles/SC_Municipios_202608_0_style.js"></script>
+<script src="./layers/layers.js" type="text/javascript"></script>
+<script src="./resources/Autolinker.min.js"></script>
+<script src="./resources/qgis2web.js"></script>
+
+<script>
+window.PAINEL_LABEL_FONT='650 9.5px Segoe UI, Arial, sans-serif';
+
+(function(){
+  const L = window.lyr_SC_Municipios_202608_0;
+  if(!L) return;
+
+  const P='mapa_situacoes_convenios_SC_2021_2026_';
+  const F={
+    mun:P+'MUNICIPIO',
+    anoIni:P+'ANO_INICIAL',
+    anoFim:P+'ANO_FINAL',
+    exec:P+'QTD_EM_EXECUCAO',
+    glob:P+'VL_GLOBAL_EXEC_FMT',
+    rep:P+'VL_REPASSE_EXEC_FMT',
+    desemb:P+'VL_DESEMB_EXEC_FMT',
+    saldo:P+'VL_SALDO_EXEC_FMT',
+    perc:P+'PERC_SALDO_REP_FMT',
+    resumo:P+'RESUMO_SITUACOES',
+    desembNum:P+'VL_DESEMBOLSADO_EXEC',
+    saldoNum:P+'VL_SALDO_EXEC',
+    uf:P+'UF'
+  };
+
+  L.set('popuplayertitle','Execução de Convênios');
+
+  function n(v){
+    const x=Number(String(v==null?'0':v).replace(',','.'));
+    return Number.isFinite(x)?x:0;
+  }
+  function esc(v){
+    return String(v==null?'':v)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+  }
+  function brInt(v){
+    return new Intl.NumberFormat('pt-BR',{maximumFractionDigits:0}).format(v);
+  }
+  function brMoneyCompact(v){
+    if(Math.abs(v)>=1e9) return 'R$ '+(v/1e9).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+' bi';
+    if(Math.abs(v)>=1e6) return 'R$ '+(v/1e6).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+' mi';
+    if(Math.abs(v)>=1e3) return 'R$ '+(v/1e3).toLocaleString('pt-BR',{minimumFractionDigits:1,maximumFractionDigits:1})+' mil';
+    return 'R$ '+v.toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2});
+  }
+
+  // Cabeçalho, indicadores e ranking calculados diretamente da camada exportada.
+  const feats=L.getSource().getFeatures();
+  let totalExec=0,totalDesemb=0,totalSaldo=0,munExec=0;
+  const ranking=[];
+  feats.forEach(function(ft){
+    const q=n(ft.get(F.exec));
+    totalExec+=q;
+    totalDesemb+=n(ft.get(F.desembNum));
+    totalSaldo+=n(ft.get(F.saldoNum));
+    if(q>0) munExec++;
+    ranking.push({nome:ft.get('NM_MUN')||ft.get(F.mun)||'',q:q});
+  });
+
+  document.getElementById('kpi-exec').textContent=brInt(totalExec);
+  document.getElementById('kpi-mun').textContent=brInt(munExec);
+  document.getElementById('kpi-desemb').textContent=brMoneyCompact(totalDesemb);
+  document.getElementById('kpi-saldo').textContent=brMoneyCompact(totalSaldo);
+
+  if(feats.length){
+    const ini=feats[0].get(F.anoIni)||'2021';
+    const fim=feats[0].get(F.anoFim)||'2026';
+    document.getElementById('periodo-label').textContent=ini+'–'+fim;
+    const uf=feats[0].get(F.uf)||'SC';
+    document.getElementById('uf-label').textContent=uf;
+  }
+
+  // Cinco maiores faixas; empates na mesma quantidade aparecem juntos.
+  ranking.sort(function(a,b){ return b.q-a.q || a.nome.localeCompare(b.nome,'pt-BR'); });
+  const groups=[];
+  ranking.forEach(function(r){
+    if(r.q<=0) return;
+    let g=groups.find(function(x){return x.q===r.q;});
+    if(!g){ g={q:r.q,nomes:[]}; groups.push(g); }
+    g.nomes.push(r.nome);
+  });
+  const rankEl=document.getElementById('ranking');
+  groups.slice(0,5).forEach(function(g){
+    const li=document.createElement('li');
+    li.innerHTML='<span><b>'+esc(g.nomes.join(' / '))+'</b></span><span class="badge">'+brInt(g.q)+'</span>';
+    rankEl.appendChild(li);
+  });
+
+  // Rótulos: município na primeira linha e quantidade em execução na segunda.
+  const baseStyle=window.style_SC_Municipios_202608_0;
+  if(baseStyle){
+    L.setStyle(function(feature,resolution){
+      const styles=baseStyle(feature,resolution)||[];
+      const nome=feature.get('NM_MUN')||feature.get(F.mun)||'';
+      const qtd=n(feature.get(F.exec));
+      const txt=qtd>0 ? nome+'\n'+brInt(qtd) : nome;
+      styles.forEach(function(st){
+        st.setText(new ol.style.Text({
+          text:txt,
+          font:window.PAINEL_LABEL_FONT,
+          fill:new ol.style.Fill({color:'#111827'}),
+          stroke:new ol.style.Stroke({color:'rgba(255,255,255,.95)',width:3}),
+          textAlign:'center',
+          textBaseline:'middle',
+          overflow:false
+        }));
+      });
+      return styles;
+    });
+  }
+
+  // Cursor de clique.
+  if(window.map){
+    map.on('pointermove',function(evt){
+      if(evt.dragging) return;
+      const hit=map.hasFeatureAtPixel(evt.pixel,{layerFilter:function(layer){return layer===L;}});
+      map.getTargetElement().style.cursor=hit?'pointer':'';
+    });
+  }
+
+  function row(label,value,cls){
+    if(value==null || String(value).trim()==='') return '';
+    return '<tr'+(cls?' class="'+cls+'"':'')+'><th>'+esc(label)+'</th><td>'+esc(value)+'</td></tr>';
+  }
+  function situacoesHTML(value,periodo){
+    const parts=String(value||'').split(/\s*\|\s*/).map(function(s){return s.trim();}).filter(Boolean);
+    if(!parts.length) return '<div class="situacoes-empty">Sem situações informadas.</div>';
+    const rows=parts.map(function(item){
+      const m=item.match(/^(.*?):\s*([0-9]+)\s*$/);
+      const nome=m?m[1].trim():item;
+      const qtd=m?m[2]:'';
+      return '<div class="situacao-row"><span class="situacao-nome">'+esc(nome)+'</span>'+
+             (qtd?'<span class="situacao-qtd">'+esc(qtd)+'</span>':'')+'</div>';
+    }).join('');
+    return '<div class="situacoes-title">Situações '+esc(periodo)+'</div><div class="situacoes-wrap">'+rows+'</div>';
+  }
+
+  // Popup somente com os campos gerenciais aprovados, em ordem amigável.
+  window.createPopupField=function(currentFeature){
+    const ini=currentFeature.get(F.anoIni)||'2021';
+    const fim=currentFeature.get(F.anoFim)||'2026';
+    const periodo=ini+'–'+fim;
+    let out='';
+    out+=row('Município',currentFeature.get(F.mun)||currentFeature.get('NM_MUN'),'popup-municipio');
+    out+=row('Em execução',currentFeature.get(F.exec));
+    out+=row('Valor global',currentFeature.get(F.glob));
+    out+=row('Repasse',currentFeature.get(F.rep));
+    out+=row('Desembolsado',currentFeature.get(F.desemb));
+    out+=row('Saldo informado',currentFeature.get(F.saldo));
+    out+=row('Saldo / repasse',currentFeature.get(F.perc));
+    out+='<tr class="popup-section"><td colspan="2">'+situacoesHTML(currentFeature.get(F.resumo),periodo)+'</td></tr>';
+    return out;
+  };
+})();
+
+// Painel lateral recolhível.
+(function(){
+  const btn=document.getElementById('sidebar-toggle');
+  if(!btn) return;
+  btn.addEventListener('click',function(){
+    const collapsed=document.body.classList.toggle('sidebar-collapsed');
+    btn.textContent=collapsed?'›':'‹';
+    btn.setAttribute('aria-expanded',collapsed?'false':'true');
+    btn.setAttribute('aria-label',collapsed?'Expandir painel':'Recolher painel');
+    window.setTimeout(function(){
+      if(window.map && map.updateSize) map.updateSize();
+    },260);
+  });
+})();
+</script>
+</body>
+</html>
