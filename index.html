@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1,user-scalable=no,maximum-scale=1,width=device-width">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <link rel="stylesheet" href="./resources/ol.css">
+    <link rel="stylesheet" href="./resources/fontawesome-all.min.css">
+    <link rel="stylesheet" href="./resources/photon-geocoder-autocomplete.min.css">
+    <link rel="stylesheet" href="./resources/ol-layerswitcher.css">
+    <link rel="stylesheet" href="./resources/qgis2web.css">
+    <link rel="stylesheet" href="./resources/painel_gestao.css">
+    <title>Painel de Gestão • SC | Execução de Convênios</title>
+</head>
+<body>
+    <div id="app-shell">
+        <aside id="gestao-panel" aria-label="Painel de Gestão">
+            <div class="panel-scroll">
+                <header class="panel-header">
+                    <button id="panel-close" class="panel-close" type="button" title="Recolher painel" aria-label="Recolher painel">‹</button>
+                    <div class="eyebrow">PAINEL DE GESTÃO • SC</div>
+                    <h1>Execução de Convênios</h1>
+                    <p class="subtitle">Panorama municipal dos instrumentos em execução em Santa Catarina.</p>
+                    <div class="period-pill">PERÍODO ANALISADO <strong>2021–2026</strong></div>
+                </header>
+
+                <section class="panel-section" aria-labelledby="resumo-title">
+                    <div class="section-heading">
+                        <h2 id="resumo-title">Resumo estadual</h2>
+                    </div>
+                    <div class="summary-grid">
+                        <article class="metric-card metric-primary">
+                            <span class="metric-label">Em execução</span>
+                            <strong id="metric-exec">—</strong>
+                        </article>
+                        <article class="metric-card">
+                            <span class="metric-label">Municípios</span>
+                            <strong id="metric-municipios">—</strong>
+                        </article>
+                        <article class="metric-card metric-wide">
+                            <span class="metric-label">Valor desembolsado</span>
+                            <strong id="metric-desembolsado">—</strong>
+                        </article>
+                        <article class="metric-card metric-wide">
+                            <span class="metric-label">Saldo informado</span>
+                            <strong id="metric-saldo">—</strong>
+                        </article>
+                    </div>
+                </section>
+
+                <section class="panel-section" aria-labelledby="ranking-title">
+                    <div class="section-heading ranking-heading">
+                        <div>
+                            <span class="section-kicker">MAIOR QUANTIDADE</span>
+                            <h2 id="ranking-title">Em execução</h2>
+                        </div>
+                    </div>
+                    <div id="ranking-list" class="ranking-list"></div>
+                </section>
+
+                <section class="panel-section legend-section" aria-labelledby="legenda-title">
+                    <div class="section-heading">
+                        <h2 id="legenda-title">Legenda</h2>
+                    </div>
+                    <div class="legend-list" aria-label="Quantidade de instrumentos em execução">
+                        <div class="legend-row"><span class="legend-swatch" style="background:rgb(255,255,255)"></span><span>0 – 1</span></div>
+                        <div class="legend-row"><span class="legend-swatch" style="background:rgb(205,221,255)"></span><span>1 – 2</span></div>
+                        <div class="legend-row"><span class="legend-swatch" style="background:rgb(155,187,255)"></span><span>2 – 4</span></div>
+                        <div class="legend-row"><span class="legend-swatch" style="background:rgb(106,153,255)"></span><span>4 – 6</span></div>
+                        <div class="legend-row"><span class="legend-swatch" style="background:rgb(56,119,255)"></span><span>6 – 10</span></div>
+                        <div class="legend-row"><span class="legend-swatch" style="background:rgb(6,85,255)"></span><span>10 – 30</span></div>
+                    </div>
+                    <p class="legend-note">Quantidade de instrumentos em execução por município.</p>
+                </section>
+            </div>
+        </aside>
+
+        <main id="map-area">
+            <button id="panel-open" class="panel-open" type="button" title="Abrir painel" aria-label="Abrir painel">☰</button>
+            <div id="map">
+                <div id="popup" class="ol-popup">
+                    <a href="#" id="popup-closer" class="ol-popup-closer" aria-label="Fechar"></a>
+                    <div id="popup-content"></div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="./resources/qgis2web_expressions.js"></script>
+    <script src="./resources/functions.js"></script>
+    <script src="./resources/ol.js"></script>
+    <script src="./resources/ol-layerswitcher.js"></script>
+    <script src="./resources/photon-geocoder-autocomplete.min.js"></script>
+    <script src="./resources/olms.js"></script>
+    <script src="./layers/SC_Municipios_WEBs_202608_0.js"></script>
+    <script src="./styles/SC_Municipios_WEBs_202608_0_style.js"></script>
+    <script src="./layers/layers.js" type="text/javascript"></script>
+    <script src="./resources/Autolinker.min.js"></script>
+    <script src="./resources/qgis2web.js"></script>
+    <script src="./resources/painel_gestao.js"></script>
+</body>
+</html>
